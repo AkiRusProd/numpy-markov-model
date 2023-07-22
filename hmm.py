@@ -54,7 +54,9 @@ class HiddenMarkovModel:
         for _ in range(n_steps):
             sequence.append(np.random.choice(len(self.emission_matrix[current_state]), p=self.emission_matrix[current_state]))
             current_state = np.random.choice(len(self.states), p=self.transition_matrix[current_state])
-        return sequence
+
+        sequence_states = [self.observations[i] for i in sequence]
+        return sequence, sequence_states
     
 
     def forward(self, observations):
@@ -106,6 +108,32 @@ class HiddenMarkovModel:
             state_sequence.append(self.states[np.argmax(posterior[t])])
 
         return state_sequence, posterior
+
+
+    def viterbi(self, observations):
+        T = len(observations)
+        N = len(self.states)
+        delta = np.zeros((T, N))
+        psi = np.zeros((T, N))
+
+        # Initialization
+        delta[0] = self.initial_probabilities * self.emission_matrix[:, observations[0]]
+
+        # Recursion
+        for t in range(1, T):
+            for j in range(N):
+                delta[t, j] = np.max(delta[t-1] * self.transition_matrix[:, j]) * self.emission_matrix[j, observations[t]]
+                psi[t, j] = np.argmax(delta[t-1] * self.transition_matrix[:, j])
+
+        # Path backtracking
+        path = np.zeros(T, dtype=int)
+        path[T-1] = np.argmax(delta[T-1])
+
+        for t in range(T-2, -1, -1):
+            path[t] = psi[t+1, path[t+1]]
+
+        state_sequence = [self.states[i] for i in path]
+        return state_sequence
     
 
     def render(self, view = True, save_path = "markov-chain-viz", file_format = "png"):
@@ -171,11 +199,11 @@ emission_matrix = np.array([[0.9, 0.1], [0.2, 0.8], [0.3, 0.7]])
 initial_probabilities = np.array([0.4, 0.3, 0.3])
 
 weather_model = HiddenMarkovModel(transition_matrix, emission_matrix, initial_probabilities, states=["Солнечная погода", "Облачная погода", "Дождливая погода"], observations=["Плохое настроение", "Хорошее настроение"])
-weather_model.render()
+# weather_model.render()
 
 # Генерация последовательности состояний
-sequence = weather_model.sample(n_steps=2)
-print("Сгенерированная последовательность состояний:", sequence)
+sequence, observations = weather_model.sample(n_steps=5)
+print("Сгенерированная последовательность состояний:", observations)
 
 # Восстановление наиболее вероятной последовательности состояний
 state_sequence, posterior = weather_model.forward_backward(sequence)
@@ -232,6 +260,9 @@ def forward_backward(transition_probability, emit_probability, initial_probabili
 
 
 
-predicted_states = forward_backward(transition_matrix, emission_matrix, initial_probabilities, sequence)
-# print(posterior)
+# predicted_states = forward_backward(transition_matrix, emission_matrix, initial_probabilities, sequence)
+# # print(posterior)
+# print(predicted_states)
+
+predicted_states = weather_model.viterbi(sequence)
 print(predicted_states)
