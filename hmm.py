@@ -123,7 +123,7 @@ class HiddenMarkovModel:
 
         n_observes = self.emission_matrix.shape[1]
         for i in range(n_observes):
-            dot.node(str(i+n_states), label=str(self.observations[i]))
+            dot.node(str(i+n_states), label=str(self.observations[i]), color='red')
 
         for i in range(n_states):
             for j in range(n_observes):
@@ -131,7 +131,7 @@ class HiddenMarkovModel:
                 if emission > 0:
                     # dot.node_attr.update({'label': f'{self.states[i]}\nEmission: {emission}'})
                     # dot.edge_attr.update({'label': f'{self.states[j]}'})
-                    dot.edge(str(i), str(j+n_states), label=str(emission))
+                    dot.edge(str(i), str(j+n_states), label=str(emission), color='red')
 
                     
         dot.render(f'{save_path}', format=file_format, view=view)
