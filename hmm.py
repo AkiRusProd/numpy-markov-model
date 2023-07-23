@@ -122,9 +122,13 @@ class HiddenMarkovModel:
         # Recursion
         for t in range(1, T):
             for j in range(N):
-                delta[t, j] = np.max(delta[t-1] * self.transition_matrix[:, j]) * self.emission_matrix[j, observations[t]]
-                psi[t, j] = np.argmax(delta[t-1] * self.transition_matrix[:, j])
+                # delta[t, j] = np.max(delta[t-1] * self.transition_matrix[:, j]) * self.emission_matrix[j, observations[t]]
+                # psi[t, j] = np.argmax(delta[t-1] * self.transition_matrix[:, j])
 
+                probs = delta[t-1] * self.transition_matrix[:, j] * self.emission_matrix[:, observations[t]]
+                delta[t, j] = np.max(probs)
+                psi[t, j] = np.argmax(probs)
+                
         # Path backtracking
         path = np.zeros(T, dtype=int)
         path[T-1] = np.argmax(delta[T-1])
