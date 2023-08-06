@@ -1,10 +1,11 @@
 import numpy as np
 from graphviz import Digraph
+from typing import List, Optional, Union, Tuple
 
 
 
 class HiddenMarkovModel:
-    def __init__(self, transition_matrix, emission_matrix, initial_probabilities, states=None, observations=None):
+    def __init__(self, transition_matrix: np.ndarray, emission_matrix: np.ndarray, initial_probabilities: np.ndarray, states: Optional[List[str]] = None, observations: Optional[List[str]] = None) -> None:
         self.states = states
         self.observations = observations
         self.transition_matrix = transition_matrix
@@ -23,18 +24,18 @@ class HiddenMarkovModel:
         self.check_observations
 
     @property
-    def check_transition_matrix(self):
-        assert np.allclose(np.sum(self.transition_matrix, axis=1), 1.0), "Transition matrix rows should sum to 1"
+    def check_transition_matrix(self) -> None:
+        assert np.allclose(np.sum(self.transition_matrix, axis=1), np.ones(len(self.transition_matrix))), "Transition matrix rows should sum to 1"
 
     @property
-    def check_states(self):
+    def check_states(self) -> None:
         assert len(self.transition_matrix) == len(self.states), "Transition matrix and states names should have the same length"
 
     @property
-    def check_observations(self):
+    def check_observations(self) -> None:
         assert self.emission_matrix.shape[1] == len(self.observations), "Emission matrix and observations names should have the same length"
 
-    def stationary_distribution(self, n_steps=None):
+    def stationary_distribution(self,  n_steps: Optional[int] = None) -> np.ndarray:
         if not n_steps:   
             eigenvalues, eigenvectors = np.linalg.eig(self.transition_matrix.T)
             index = np.argmin(np.abs(eigenvalues - 1))
@@ -45,9 +46,11 @@ class HiddenMarkovModel:
         else:
             return np.linalg.matrix_power(self.transition_matrix, n_steps)
 
-    def sample(self, n_steps, current_state=None):
+    def sample(self, n_steps: int, current_state: Optional[Union[int, str]] = None) -> Tuple[List[int], List[str]]:
         if not current_state:
             current_state = np.random.choice(len(self.states), p=self.initial_probabilities)
+        elif type(current_state) == str:
+            current_state = self.states.index(current_state)
 
         sequence = []
 
@@ -59,7 +62,7 @@ class HiddenMarkovModel:
         return sequence, sequence_states
     
 
-    def forward(self, observations):
+    def forward(self, observations: List[int]) -> np.ndarray:
         T = len(observations)
         N = len(self.states)
         alpha = np.zeros((T, N))
@@ -74,7 +77,7 @@ class HiddenMarkovModel:
 
         return alpha
 
-    def backward(self, observations):
+    def backward(self, observations: List[int]) -> np.ndarray:
         T = len(observations)
         N = len(self.states)
         beta = np.zeros((T, N))
@@ -89,7 +92,7 @@ class HiddenMarkovModel:
 
         return beta
 
-    def forward_backward(self, observations):
+    def forward_backward(self, observations: List[int]) -> Tuple[List[str], np.ndarray]:
         T = len(observations)
         N = len(self.states)
         alpha = self.forward(observations)
@@ -110,7 +113,7 @@ class HiddenMarkovModel:
         return state_sequence, posterior
 
 
-    def viterbi(self, observations):
+    def viterbi(self, observations: List[int]) -> List[str]:
         T = len(observations)
         N = len(self.states)
         delta = np.zeros((T, N))
@@ -140,7 +143,47 @@ class HiddenMarkovModel:
         return state_sequence
     
 
-    def render(self, view = True, save_path = "markov-chain-viz", file_format = "png"):
+    def baum_welch(self, observations: List[int], n_iterations: int) -> None:
+        T = len(observations)
+        N = len(self.states)
+        M = len(self.observations)
+        alpha = self.forward(observations)
+        beta = self.backward(observations)
+        xi = np.zeros((T - 1, N, N))
+        gamma = np.zeros((T, N))
+
+        # for t in range(T):
+        #     gamma[t] = alpha[t] * beta[t] / np.sum(alpha[t] * beta[t]) 
+
+        # E-step: compute xi and gamma
+        gamma = alpha * beta / np.sum(alpha * beta, axis=1, keepdims=True)
+
+        for _ in range(n_iterations):
+            for t in range(T - 1):
+                # denominator = np.sum(alpha[t] * beta[t])
+                for i in range(N):
+                    for j in range(N):
+                        xi[t, i, j] = alpha[t, i] * self.transition_matrix[i, j] * self.emission_matrix[j, observations[t + 1]] * beta[t + 1, j] #/ denominator
+
+            xi /= np.sum(xi, axis=(1, 2), keepdims=True)
+
+            # M-step: update transition matrix, emission matrix, and initial probabilities
+            self.transition_matrix = np.sum(xi, axis=0) / np.sum(gamma[:-1], axis=0, keepdims=True)
+
+            self.emission_matrix = np.zeros((N, M))
+            for j in range(N):
+                for k in range(M):
+                    mask = np.array(observations) == k
+                    self.emission_matrix[j, k] = np.sum(gamma[:, j] * mask) / np.sum(gamma[:, j])
+            # self.emission_matrix = np.sum(posterior[:, :, np.newaxis] * (observations == np.arange(len(self.observations))[:, np.newaxis]), axis=0) / np.sum(gamma, axis=0)
+
+            self.initial_probabilities = gamma[0]
+
+            self.transition_matrix /= self.transition_matrix.sum(axis=1, keepdims=True)
+            self.emission_matrix /= self.emission_matrix.sum(axis=1, keepdims=True)
+            # self.initial_probabilities /= self.initial_probabilities.sum()
+
+    def render(self, view: bool = True, save_path: str = "markov-chain-viz", file_format: str = "png") -> None:
         dot = Digraph()
 
         n_states = len(self.states)
