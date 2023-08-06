@@ -11,7 +11,13 @@ transition_matrix = np.array([[0.8, 0.1, 0.1], [0.2, 0.7, 0.1], [0.1, 0.3, 0.6]]
 emission_matrix = np.array([[0.9, 0.1], [0.2, 0.8], [0.3, 0.7]])
 initial_probabilities = np.array([0.4, 0.3, 0.3])
 
-hmm = HiddenMarkovModel(transition_matrix, emission_matrix, initial_probabilities, states=["Sunny weather", "Cloudy weather", "Rainy weather"], observations=["Bad mood", "Good mood"])
+hmm = HiddenMarkovModel(
+    transition_matrix, 
+    emission_matrix, 
+    initial_probabilities, 
+    states=["Sunny weather", "Cloudy weather", "Rainy weather"], 
+    observations=["Bad mood", "Good mood"]
+)
 hmm.render()
 
 sequence, observations = hmm.sample(n_steps=5)

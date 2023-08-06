@@ -28,7 +28,7 @@ nlp_mm = MarkovModel()
 nlp_mm.train(corpus_elems)
 
 #Sample
-sequence = ' '.join(nlp_mm.sample(250, current_state='users'))
+sequence = ' '.join(nlp_mm.sample(15, current_state='users'))
 
 print(sequence)
 
@@ -36,7 +36,10 @@ print(sequence)
 
 # Example usage 2
 # transition_matrix = np.array([[0.2, 0.6, 0.2], [0.3, 0, 0.7], [0.5, 0, 0.5]])
-# mm = MarkovModel(states = ['State 1', 'State 2', 'State 3'], transition_matrix=transition_matrix)
+# mm = MarkovModel(
+#     states = ['State 1', 'State 2', 'State 3'], 
+#     transition_matrix=transition_matrix
+# )
 
 # print(mm.sample(n_steps = 5))
 # print(mm.stationary_distribution())
