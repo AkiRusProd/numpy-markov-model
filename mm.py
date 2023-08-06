@@ -79,10 +79,6 @@ class MarkovModel:
             return [self.states[i] for i in sequence]
         else:
             return sequence
-
-    
-    def __str__(self) -> str:
-        return f"MarkovChain(\nstates: \n{self.states} \ntransition_matrix: \n{self.transition_matrix})"
     
     def render(self, view: bool = True, save_path: str = "markov-chain-viz", file_format: str = "png") -> None:
         dot = Digraph()
@@ -99,19 +95,3 @@ class MarkovModel:
                     
         dot.render(f'{save_path}', format=file_format, view=view)
         
-
-transition_matrix = np.array([[0.2, 0.6, 0.2],
-                             [0.3, 0, 0.7],
-                             [0.5, 0, 0.5]])
-
-#Example usage
-# mm = MarkovModel(states = ['st 1', 'st 2', 'st 3'], transition_matrix=transition_matrix)
-# print(mm)
-
-# print(mm.sample(n_steps = 5))
-
-# print(mm.stationary_distribution())
-
-# print(mm.stationary_distribution(n_steps=1000))
-
-# mm.render()

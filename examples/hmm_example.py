@@ -4,7 +4,7 @@ sys.path.append(".")
 
 from hmm import HiddenMarkovModel
 
-
+# Example usage
 # Define your transition matrix, emission matrix, initial probabilities, states, and observations
 
 transition_matrix = np.array([[0.8, 0.1, 0.1], [0.2, 0.7, 0.1], [0.1, 0.3, 0.6]])
