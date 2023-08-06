@@ -212,54 +212,6 @@ class HiddenMarkovModel:
         dot.render(f'{save_path}', format=file_format, view=view)
 
 
-# # Example usage
-# states = ['Sunny', 'Rainy']
-# transition_matrix = np.array([[0.8, 0.2], [0.4, 0.6]])
-# emission_matrix = np.array([[0.7, 0.3], [0.4, 0.6]])
-# initial_probabilities = np.array([0.6, 0.4])
-
-# hmm = HiddenMarkovModel(transition_matrix, emission_matrix, initial_probabilities, states)
-# sequence = hmm.sample(10)
-# print("Generated Sequence:", sequence)
-# predicted_states = hmm.forward_backward(sequence)
-# print("Predicted States:", predicted_states)
-
-
-# transition_matrix = np.array([[0.7, 0.3], [0.3, 0.7]])
-# emission_matrix = np.array([[0.9, 0.1], [0.2, 0.8]])
-
-# states = ['Sunny', 'Rainy']
-# initial_probabilities = np.array([0.5, 0.5])
-
-# mm = HiddenMarkovModel(transition_matrix, emission_matrix, initial_probabilities, states)
-# sequence = mm.sample(2)
-
-# print(sequence)
-
-# predicted_states, posterior = mm.forward_backward(sequence)
-# print(posterior)
-# print(predicted_states)
-
-
-transition_matrix = np.array([[0.8, 0.1, 0.1], [0.2, 0.7, 0.1], [0.1, 0.3, 0.6]])
-emission_matrix = np.array([[0.9, 0.1], [0.2, 0.8], [0.3, 0.7]])
-initial_probabilities = np.array([0.4, 0.3, 0.3])
-
-weather_model = HiddenMarkovModel(transition_matrix, emission_matrix, initial_probabilities, states=["Солнечная погода", "Облачная погода", "Дождливая погода"], observations=["Плохое настроение", "Хорошее настроение"])
-# weather_model.render()
-
-# Генерация последовательности состояний
-sequence, observations = weather_model.sample(n_steps=5)
-print("Сгенерированная последовательность состояний:", observations)
-
-# Восстановление наиболее вероятной последовательности состояний
-state_sequence, posterior = weather_model.forward_backward(sequence)
-print("Наиболее вероятная последовательность состояний:", state_sequence)
-print(posterior)
-
-
-
-import numpy as np
 """https://neerc.ifmo.ru/wiki/index.php?title=%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%22%D0%92%D0%BF%D0%B5%D1%80%D0%B5%D0%B4-%D0%9D%D0%B0%D0%B7%D0%B0%D0%B4%22"""
 
 def forward_backward(transition_probability, emit_probability, initial_probabilities, observations):
@@ -304,12 +256,3 @@ def forward_backward(transition_probability, emit_probability, initial_probabili
             probabilities[s, t] = (alpha(s, t) * beta(s, t)) / chain_probability
 
     return probabilities
-
-
-
-# predicted_states = forward_backward(transition_matrix, emission_matrix, initial_probabilities, sequence)
-# # print(posterior)
-# print(predicted_states)
-
-predicted_states = weather_model.viterbi(sequence)
-print(predicted_states)
