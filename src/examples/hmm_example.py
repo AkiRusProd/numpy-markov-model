@@ -2,7 +2,7 @@ import numpy as np
 import sys
 sys.path.append(".")
 
-from hmm import HiddenMarkovModel
+from src.hmm import HiddenMarkovModel
 
 # Example usage
 # Define your transition matrix, emission matrix, initial probabilities, states, and observations

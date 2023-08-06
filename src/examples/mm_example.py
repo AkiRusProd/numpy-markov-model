@@ -3,13 +3,13 @@ import re
 import sys
 sys.path.append(".")
 
-from mm import MarkovModel
+from src.mm import MarkovModel
 
 
 # Example usage 1
 
 #Prepare data
-with open("data/model-speech.txt", 'r') as f:
+with open("src/data/model-speech.txt", 'r') as f:
     corpus = f.read()
     
 corpus = corpus.replace('\n', ' ').lower()
