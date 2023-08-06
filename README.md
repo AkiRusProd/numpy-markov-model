@@ -4,7 +4,7 @@ This repository contains implementations of Markov Model (MM) and Hidden Markov 
 
 ## Markov Model (MM)
 
-### Example Usage:
+### Example usage:
 ```python
 import numpy as np
 import re
@@ -52,14 +52,18 @@ mm = MarkovModel(
 
 print(mm.sample(n_steps = 5))
 print(mm.stationary_distribution())
-print(mm.stationary_distribution(n_steps=1000))
 
 mm.render()
 ```
 
-### Hidden Markov Model (HMM)
+## Hidden Markov Model (HMM)
 
-### Example Usage:
+Includes algorithms:    
+1. Forward-Backward        
+2. Viterbi     
+3. Baum-Welch      
+
+### Example usage:
 ```python
 import numpy as np
 import sys
@@ -97,13 +101,12 @@ print("Restoring the most probable sequence of states via 'viterbi':\n", state_s
 hmm.baum_welch(sequence, n_iterations=10)
 
 # Updated parameters after running the Baum-Welch algorithm
-print("Updated Transition Matrix:")
-print(hmm.transition_matrix)
-print("Updated Emission Matrix:")
-print(hmm.emission_matrix)
-print("Updated Initial Probabilities:")
-print(hmm.initial_probabilities)
+print("Updated Transition Matrix:\n", hmm.transition_matrix)
+print("Updated Emission Matrix:\n", hmm.emission_matrix)
+print("Updated Initial Probabilities:\n", hmm.initial_probabilities)
+
+print("Stationary Distribution\n:", hmm.stationary_distribution())
 ```
 
-### Render via Graphviz (should install separately):
-<img src="markov-chain-viz.png" width=75% height=75%>
+### Render via Graphviz (should installed separately):
+<img src="markov-chain-viz.png" width=50% height=50%>

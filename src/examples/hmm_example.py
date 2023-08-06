@@ -34,9 +34,10 @@ print("Restoring the most probable sequence of states via 'viterbi':\n", state_s
 hmm.baum_welch(sequence, n_iterations=10)
 
 # Updated parameters after running the Baum-Welch algorithm
-print("Updated Transition Matrix:")
-print(hmm.transition_matrix)
-print("Updated Emission Matrix:")
-print(hmm.emission_matrix)
-print("Updated Initial Probabilities:")
-print(hmm.initial_probabilities)
+print("Updated Transition Matrix:\n", hmm.transition_matrix)
+print("Updated Emission Matrix:\n", hmm.emission_matrix)
+print("Updated Initial Probabilities:\n", hmm.initial_probabilities)
+
+print("Stationary Distribution\n:", hmm.stationary_distribution())
+# print(hmm.stationary_distribution(n_steps=1000))
+
