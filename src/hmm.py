@@ -212,47 +212,47 @@ class HiddenMarkovModel:
         dot.render(f'{save_path}', format=file_format, view=view)
 
 
-"""https://neerc.ifmo.ru/wiki/index.php?title=%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%22%D0%92%D0%BF%D0%B5%D1%80%D0%B5%D0%B4-%D0%9D%D0%B0%D0%B7%D0%B0%D0%B4%22"""
+# """https://neerc.ifmo.ru/wiki/index.php?title=%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%22%D0%92%D0%BF%D0%B5%D1%80%D0%B5%D0%B4-%D0%9D%D0%B0%D0%B7%D0%B0%D0%B4%22"""
 
-def forward_backward(transition_probability, emit_probability, initial_probabilities, observations):
-    num_states = transition_probability.shape[0]
-    num_observations = len(observations)
+# def forward_backward(transition_probability, emit_probability, initial_probabilities, observations):
+#     num_states = transition_probability.shape[0]
+#     num_observations = len(observations)
 
-    fwd = np.zeros((num_states, num_observations))
-    bkw = np.zeros((num_states, num_observations))
-    probabilities = np.zeros((num_states, num_observations))
+#     fwd = np.zeros((num_states, num_observations))
+#     bkw = np.zeros((num_states, num_observations))
+#     probabilities = np.zeros((num_states, num_observations))
 
-    # Forward algorithm
-    def alpha(s, t):
-        if t == 0:
-            return emit_probability[s, observations[t]] * initial_probabilities[s]
-        if fwd[s, t] != 0:
-            return fwd[s, t]
-        f = np.sum(alpha(j, t - 1) * transition_probability[j, s] for j in range(num_states))
-        f *= emit_probability[s, observations[t]]
-        fwd[s, t] = f
-        return fwd[s, t]
+#     # Forward algorithm
+#     def alpha(s, t):
+#         if t == 0:
+#             return emit_probability[s, observations[t]] * initial_probabilities[s]
+#         if fwd[s, t] != 0:
+#             return fwd[s, t]
+#         f = np.sum(alpha(j, t - 1) * transition_probability[j, s] for j in range(num_states))
+#         f *= emit_probability[s, observations[t]]
+#         fwd[s, t] = f
+#         return fwd[s, t]
 
-    # Backward algorithm
-    def beta(s, t):
-        if t == num_observations - 1:
-            return 1
-        if bkw[s, t] != 0:
-            return bkw[s, t]
-        b = np.sum(beta(j, t + 1) * transition_probability[s, j] * emit_probability[j, observations[t + 1]] for j in range(num_states))
-        bkw[s, t] = b
-        return bkw[s, t]
+#     # Backward algorithm
+#     def beta(s, t):
+#         if t == num_observations - 1:
+#             return 1
+#         if bkw[s, t] != 0:
+#             return bkw[s, t]
+#         b = np.sum(beta(j, t + 1) * transition_probability[s, j] * emit_probability[j, observations[t + 1]] for j in range(num_states))
+#         bkw[s, t] = b
+#         return bkw[s, t]
 
-    # Compute forward and backward probabilities
-    for s in range(num_states):
-        fwd[s, 0] = emit_probability[s, observations[0]] * initial_probabilities[s]
-        bkw[s, num_observations - 1] = 1
+#     # Compute forward and backward probabilities
+#     for s in range(num_states):
+#         fwd[s, 0] = emit_probability[s, observations[0]] * initial_probabilities[s]
+#         bkw[s, num_observations - 1] = 1
 
-    chain_probability = np.sum(alpha(j, 0) * beta(j, 0) for j in range(num_states))
+#     chain_probability = np.sum(alpha(j, 0) * beta(j, 0) for j in range(num_states))
 
-    # Compute probabilities
-    for s in range(num_states):
-        for t in range(num_observations):
-            probabilities[s, t] = (alpha(s, t) * beta(s, t)) / chain_probability
+#     # Compute probabilities
+#     for s in range(num_states):
+#         for t in range(num_observations):
+#             probabilities[s, t] = (alpha(s, t) * beta(s, t)) / chain_probability
 
-    return probabilities
+#     return probabilities

@@ -36,7 +36,7 @@ nlp_mm = MarkovModel()
 nlp_mm.train(corpus_elems)
 
 #Sample
-sequence = ' '.join(nlp_mm.sample(250, current_state='users'))
+sequence = ' '.join(nlp_mm.sample(15, current_state='users'))
 
 print(sequence)
 #>>> users know what was able to note i want to be just primitive hints of
@@ -109,4 +109,6 @@ print("Stationary Distribution\n:", hmm.stationary_distribution())
 ```
 
 ### Render via Graphviz (should installed separately):
+<p align="center">
 <img src="markov-chain-viz.png" width=50% height=50%>
+</p>
